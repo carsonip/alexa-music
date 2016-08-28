@@ -23,24 +23,24 @@ export default function chop(filename, tempo, beats, measureCnt) {
       for (var i = 0, len = measureCnt; i + step <= len; i++) {
         for (var newTempo=0.5;newTempo<=1;newTempo+=0.5){
 
-          var id = `${timestamp}-${i}-${i + step}${newTempo==0.5?'-s':''}`;
+          var id = `${timestamp}-${i}-${i + step}-s`;
           var out = `/tmp/${id}.mp3`;
 
           var start = i * (beats / tempo) * 60, duration = (beats / tempo) * 60;
           ffmpeg(`assets/${filename}`)
             .inputOptions([
               `-ss ${start}`,
-              `-t ${duration}`,
+              `-t ${duration}`
             ])
             .audioFilters(
               {
                 filter: 'atempo',
-                options: newTempo
+                options: '0.5'
               }
             )
             .output(out)
             .on('end', ((id, out) => {return () => {
-              var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
+              var params = {Bucket: 'alexa-music', Key: `${id}.mp3`, Body: fs.createReadStream(out), ACL: 'public-read'};
               s3.putObject(params, function (err, data) {
                 if (err) console.log(err);
                 else console.log(`Successfully uploaded data to s3 ${id}`);
