@@ -21,11 +21,11 @@ export default function chop(filename, tempo, beats, measureCnt) {
       ])
         .output(out)
         .on('end', ((id, out) => {return () => {
-          var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
-          s3.putObject(params, function (err, data) {
-            if (err) console.log(err);
-            else console.log(`Successfully uploaded data to s3 ${id}`);
-          });
+          // var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
+          // s3.putObject(params, function (err, data) {
+          //   if (err) console.log(err);
+          //   else console.log(`Successfully uploaded data to s3 ${id}`);
+          // });
         }})(id, out))
         .run();
     }
