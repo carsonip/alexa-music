@@ -6,8 +6,25 @@ import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
+import "isomorphic-fetch";
+// var MusicXML = require("musicxml-interfaces/lib/index");
+// require("whatwg-fetch");
+var DOMParser = require('xmldom').DOMParser;
+
+
+
+
+// fetch('/canon_in_D.xml')
+//   .then(function(response) {
+//     return response.text()
+//   }).then(function(xml) {
+//     let document = MusicXML.parseScore(score);
+//     console.log('Converted XML to ', doc);
+//   });
 
 let app = express();
+// var router = express.Router();
+
 app.server = http.createServer(app);
 
 // 3rd party middleware
@@ -19,6 +36,8 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
+
+
 // connect to db
 initializeDb( db => {
 
@@ -27,6 +46,7 @@ initializeDb( db => {
 
 	// api router
 	app.use('/api', api({ config, db }));
+	// router.get('/convert', api.convert);
 
 	app.server.listen(process.env.PORT || config.port);
 
