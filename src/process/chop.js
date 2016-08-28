@@ -7,25 +7,41 @@ export default function chop(filename, tempo, beats, measureCnt) {
 
   var s3 = new AWS.S3();
   s3.createBucket({Bucket: 'alexa-music'}, function () {
-    for (var i = 0, len = measureCnt; i < len; i++) {
-      var id = `${timestamp}-${i}-${i + 1}`;
-      var out = `/tmp/${id}.mp3`;
+    var id = `${timestamp}`;
+    var out = `/tmp/${id}.mp3`;
+    ffmpeg(`assets/${filename}`)
+      .output(out)
+      .on('end', ((id, out) => {return () => {
+        var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
+        s3.putObject(params, function (err, data) {
+          if (err) console.log(err);
+          else console.log(`Successfully uploaded data to s3 ${id}`);
+        });
+      }})(id, out))
+      .run();
+    for (var step = 1; step <= 2; step++){
+      for (var i = 0, len = measureCnt; i + step <= len; i++) {
 
-      var start = i * (beats / tempo) * 60, duration = (beats / tempo) * 60;
-      ffmpeg(`assets/${filename}`)
-        .inputOptions([
-        `-ss ${start}`,
-        `-t ${duration}`
-      ])
-        .output(out)
-        .on('end', ((id, out) => {return () => {
-          var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
-          s3.putObject(params, function (err, data) {
-            if (err) console.log(err);
-            else console.log(`Successfully uploaded data to s3 ${id}`);
-          });
-        }})(id, out))
-        .run();
+
+        var id = `${timestamp}-${i}-${i + step}`;
+        var out = `/tmp/${id}.mp3`;
+
+        var start = i * (beats / tempo) * 60, duration = (beats / tempo) * 60;
+        ffmpeg(`assets/${filename}`)
+          .inputOptions([
+            `-ss ${start}`,
+            `-t ${duration}`
+          ])
+          .output(out)
+          .on('end', ((id, out) => {return () => {
+            var params = {Bucket: 'alexa-music', Key: id, Body: fs.createReadStream(out), ACL: 'public-read'};
+            s3.putObject(params, function (err, data) {
+              if (err) console.log(err);
+              else console.log(`Successfully uploaded data to s3 ${id}`);
+            });
+          }})(id, out))
+          .run();
+      }
     }
   });
 
