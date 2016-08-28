@@ -8,7 +8,6 @@ import api from './api';
 import config from './config.json';
 
 let app = express();
-
 app.server = http.createServer(app);
 
 // 3rd party middleware
@@ -28,7 +27,6 @@ initializeDb( db => {
 
 	// api router
 	app.use('/api', api({ config, db }));
-	// router.get('/convert', api.convert);
 
 	app.server.listen(process.env.PORT || config.port);
 
