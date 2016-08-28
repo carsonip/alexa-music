@@ -3,8 +3,6 @@ import fs from 'fs';
 import AWS from 'aws-sdk';
 
 export default function chop(filename, tempo, beats, measureCnt) {
-  var manifest = {};
-
   var timestamp = Math.floor(new Date() / 1000);
 
   var s3 = new AWS.S3();
@@ -31,5 +29,9 @@ export default function chop(filename, tempo, beats, measureCnt) {
     }
   });
 
-  return manifest;
+  return {
+    baseUrl: "https://s3.amazonaws.com/alexa-music/",
+    baseId: timestamp,
+    measureCnt: measureCnt
+  };
 }

@@ -19,9 +19,9 @@ export default ({ config, db }) => {
 
 	api.get('/process', (req, res) => {
 		var attr = analyze('lg-118157446.xml');
-		chop('canon.mp3', attr.tempo, attr.beats, attr.measureNumber);
+		var result = chop('canon.mp3', attr.tempo, attr.beats, attr.measureNumber);
 
-		res.json({});
+		res.json(result);
 	});
 
 	return api;
