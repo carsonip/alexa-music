@@ -1,12 +1,9 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
 import facets from './facets';
-<<<<<<< HEAD
 import chop from '../process/chop.js'
-=======
 var DOMParser = require('xmldom').DOMParser;
-const fs = require('fs');
->>>>>>> function/convert
+import fs from 'fs'
 
 export default ({ config, db }) => {
 	let api = Router();
